@@ -1,0 +1,36 @@
+{
+  "name": "jobcast",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": "6.10.1"
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "~1.17.1",
+    "connect-pg-simple": "^4.2.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "dotenv": "^4.0.0",
+    "express": "~4.15.2",
+    "express-enforces-ssl": "^1.1.0",
+    "express-session": "^1.15.5",
+    "helmet": "^3.9.0",
+    "joi": "^10.6.0",
+    "jsonwebtoken": "^8.1.0",
+    "mongoose": "^4.13.3",
+    "morgan": "~1.8.1",
+    "ms": "^2.0.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^3.0.1",
+    "passport-local": "^1.0.0",
+    "pg-promise": "^6.5.1",
+    "serve-favicon": "~2.4.2"
+  }
+}
