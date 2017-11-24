@@ -183,7 +183,27 @@ Router.delete('/:id', passport.authenticate('jwt', { session: false }), function
                 next(err);
             }
 
-            res.status(200).send("Job Profile successfully deleted");
+            removeJobProfileIDFromUser(jobProfileID, userID);
+
+            function removeJobProfileIDFromUser(jobProfileID, userID) {
+
+                user.findByIdAndUpdate(userID, { $pull: { jobProfiles: jobProfile._id } }, function (err, user) {
+                    if (err) {
+                        console.log(err);
+                        next(err);
+                    }
+
+                    console.log(user);
+                    res.status(200).json({
+                        message: "Job Profile successfully deleted",
+                        user: user
+                    });
+
+                })
+
+            }
+
+            // res.status(200).send("Job Profile successfully deleted");
         })
 
     }
