@@ -4,6 +4,10 @@ var passport = require('passport');
 var jobProfile = require('./jobprofileSchema.js');
 var user = require('../user/userSchema.js');
 
+var onSuccessAbstract = require('./onSuccessAbstract.js');
+var onErrorAbstract = require('./onErrorAbstract.js');
+var isUserAuthorizedForJobProfile = require('./isUserAuthorizedForJobProfile.js');
+
 module.exports = putJobProfileByID;
 
 function putJobProfileByID(req, res, next) {
@@ -53,64 +57,5 @@ function updateJobProfileAbstract(onSuccess, onError) {
 
             onSuccess(200, "Job Profile updated", jobProfile);
         })
-    }
-}
-
-function isUserAuthorizedForJobProfile(jobProfileID, userID, onValidatingUserAuthorization) {
-    // Database call
-    // Synchronize the database call using a promise
-    // 1. Wrap in a function(resolve, reject)
-    // 2. Complete the then/ catch loop
-
-    function isUserAuthorizedForJobProfilePromise(resolve, reject) {
-        console.log("Inside parent resolve/ reject");
-
-        jobProfile.findById(jobProfileID, function (err, jobProfile) {
-
-            if (err) {
-                console.log("Inside reject side of findByID");
-                reject(err);
-            }
-            if (String(jobProfile.createdBy) === String(userID)) {
-                console.log("Inside resolve side of findByID");
-                resolve(true);
-            } else {
-                console.log("Inside resolve side of findByID");
-                resolve(false);
-            }
-
-        });
-    }
-
-    new Promise(isUserAuthorizedForJobProfilePromise)
-        .then(function (isUserAuthorizedForJobProfile) {
-            console.log("Inside step to callback from within isUserAuthorizedForJobProfile");
-            onValidatingUserAuthorization(null, isUserAuthorizedForJobProfile);
-        })
-        .catch(function (err) {
-            onValidatingUserAuthorization(err, null);
-        })
-}
-
-function onSuccessAbstract(res) {
-
-    return function (status, message, data) {
-
-        console.log(message);
-        console.log(data);
-
-        res.status(status).json({
-            'message': message,
-            'data': data,
-            'howzzat': 'Testing the onSuccessAbstract function'
-        });
-    }
-}
-
-function onErrorAbstract(next) {
-
-    return function (err) {
-        console.log(err);
-        next(err);
     }
 }

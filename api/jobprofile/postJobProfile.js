@@ -4,6 +4,9 @@ var passport = require('passport');
 var jobProfile = require('./jobprofileSchema.js');
 var user = require('../user/userSchema.js');
 
+var onSuccessAbstract = require('./onSuccessAbstract.js');
+var onErrorAbstract = require('./onErrorAbstract.js');
+
 module.exports = postJobProfile;
 
 function postJobProfile(req, res, next) {
@@ -57,28 +60,5 @@ function postJobProfileAbstract(onSuccess, onError) {
                 onSuccess(200, "Job Profile posted and User profile updated with Job Profile ID", data)
             })
         }
-    }
-}
-
-function onSuccessAbstract(res) {
-
-    return function (status, message, data) {
-
-        console.log(message);
-        console.log(data);
-
-        res.status(status).json({
-            'message': message,
-            'data': data,
-            'howzzat': 'Testing the onSuccessAbstract function'
-        });
-    }
-}
-
-function onErrorAbstract(next) {
-
-    return function (err) {
-        console.log(err);
-        next(err);
     }
 }
