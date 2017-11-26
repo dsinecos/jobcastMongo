@@ -10,202 +10,221 @@ var user = require('../user/userSchema.js');
 
 // Setting up routes for jobProfile
 
-Router.post('/', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+var postJobProfile = require('./postJobProfileFunctionalRefactoring');
+Router.post('/', passport.authenticate('jwt', { session: false }), postJobProfile);
 
-    var userID = req.user._id;
+// Router.post('/', passport.authenticate('jwt', { session: false }), function (req, res, next) {
 
-    jobProfile.create({
-        jobTitle: req.body.jobTitle,
-        jobDescription: req.body.jobDescription,
-        companyName: req.body.companyName,
-        companyDescription: req.body.companyDescription,
-        createdBy: userID
-    }, function (err, jobProfile) {
+//     var userID = req.user._id;
 
-        if (err) {
-            console.log(err);
-            next(err);
-        }
+//     jobProfile.create({
+//         jobTitle: req.body.jobTitle,
+//         jobDescription: req.body.jobDescription,
+//         companyName: req.body.companyName,
+//         companyDescription: req.body.companyDescription,
+//         createdBy: userID
+//     }, function (err, jobProfile) {
 
-        console.log("Job Profile created");
-        console.log(jobProfile);
+//         if (err) {
+//             console.log(err);
+//             next(err);
+//         }
 
-        user.findByIdAndUpdate(userID, { $push: { jobProfiles: jobProfile._id } }, function (err, user) {
-            if (err) {
-                console.log(err);
-                next(err);
-            }
+//         console.log("Job Profile created");
+//         console.log(jobProfile);
 
-            console.log(user);
-            res.status(200).json({
-                jobProfile: jobProfile,
-                user: user
-            });
+//         user.findByIdAndUpdate(userID, { $push: { jobProfiles: jobProfile._id } }, function (err, user) {
+//             if (err) {
+//                 console.log(err);
+//                 next(err);
+//             }
 
-        })
+//             console.log(user);
+//             res.status(200).json({
+//                 jobProfile: jobProfile,
+//                 user: user
+//             });
+
+//         })
 
 
-    });
-});
+//     });
+// });
 
 // How to get one, get all, edit and delete jobProfiles for the respective user?
 
-Router.get('/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
-    var jobProfileID = req.params.id;
-    var userID = req.user._id;
+var getJobProfileByID = require('./getJobProfileFunctionalRefactoring');
+Router.get('/:id', passport.authenticate('jwt', { session: false }), getJobProfileByID);
 
-    userAuthorizedForJobProfile(jobProfileID, userID)
-        .then(function (jobProfile) {
-            if (jobProfile.status) {
-                res.status(200).json(jobProfile.jobProfile);
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized access'
-                })
-            }
-        })
-        .catch(function (err) {
-            console.log(err);
-            next(err);
-        })
+// Router.get('/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+//     var jobProfileID = req.params.id;
+//     var userID = req.user._id;
+
+//     isUserAuthorizedForJobProfile(jobProfileID, userID)
+//         .then(function (jobProfile) {
+//             if (jobProfile.status) {
+//                 res.status(200).json(jobProfile.jobProfile);
+//             } else {
+//                 res.status(401).json({
+//                     message: 'Unauthorized access'
+//                 })
+//             }
+//         })
+//         .catch(function (err) {
+//             console.log(err);
+//             next(err);
+//         })
 
 
-})
+// })
 
-function userAuthorizedForJobProfile(jobProfileID, userID) {
+// function isUserAuthorizedForJobProfile(jobProfileID, userID) {
 
-    return new Promise(function (resolve, reject) {
+//     return new Promise(function (resolve, reject) {
 
-        jobProfile.findById(jobProfileID, function (err, jobProfile) {
-            if (err) {
-                console.log(err);
-                next(err);
-            }
+//         jobProfile.findById(jobProfileID, function (err, jobProfile) {
+//             if (err) {
+//                 console.log(err);
+//                 // next(err);
+//             }
 
-            // console.log("CreatedBy information :: " + jobProfile.createdBy + " " + (typeof jobProfile.createdBy));
-            // console.log("UserID " + userID + "  " + (typeof userID));
-            // console.log("Comparison info :: " + (jobProfile.createdBy === userID));    
+//             // console.log("CreatedBy information :: " + jobProfile.createdBy + " " + (typeof jobProfile.createdBy));
+//             // console.log("UserID " + userID + "  " + (typeof userID));
+//             // console.log("Comparison info :: " + (jobProfile.createdBy === userID));    
 
-            if (String(jobProfile.createdBy) === String(userID)) {
-                resolve({
-                    status: true,
-                    jobProfile: jobProfile
+//             if (String(jobProfile.createdBy) === String(userID)) {
+//                 resolve({
+//                     status: true,
+//                     jobProfile: jobProfile
 
-                });
-            } else {
-                resolve({
-                    status: false,
-                    jobProfile: null
-                });
-            }
-        });
+//                 });
+//             } else {
+//                 resolve({
+//                     status: false,
+//                     jobProfile: null
+//                 });
+//             }
+//         });
 
-    })
-}
+//     })
+// }
 
-Router.get('/', passport.authenticate('jwt', { session: false }), function (req, res, next) {
-    var userID = req.user._id;
+var getAllJobProfiles = require('./getAllJobProfilesFunctionalRefactoring');
+Router.get('/', passport.authenticate('jwt', { session: false }), getAllJobProfiles);
 
-    user.findById(userID).populate('jobProfiles').exec(function (err, user) {
-        // console.log(user.username);
-        res.status(200).json({
-            message: 'User Data retrieved',
-            jobProfile: user.jobProfiles
-        })
-    });
+// Router.get('/', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+//     var userID = req.user._id;
 
-})
+//     user.findById(userID).populate('jobProfiles').exec(function (err, user) {
+//         // console.log(user.username);
+//         if(err) {
+//             console.log(err);
+//             next(err);
+//         }
+//         res.status(200).json({
+//             message: 'User Data retrieved',
+//             jobProfile: user.jobProfiles
+//         })
+//     });
 
-Router.put('/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
-    var jobProfileID = req.params.id;
-    var userID = req.user._id;
+// })
 
-    userAuthorizedForJobProfile(jobProfileID, userID)
-        .then(function (jobProfile) {
-            if (jobProfile.status) {
-                updateJobProfile();
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized access'
-                })
-            }
-        })
-        .catch(function (err) {
-            console.log(err);
-            next(err);
-        })
+var putJobProfileByID = require('./putJobProfileFunctionalRefactoring');
+Router.put('/:id', passport.authenticate('jwt', { session: false }), putJobProfileByID);
 
-    function updateJobProfile() {
+// Router.put('/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+//     var jobProfileID = req.params.id;
+//     var userID = req.user._id;
 
-        jobProfile.findByIdAndUpdate(jobProfileID, {
-            jobTitle: req.body.jobTitle,
-            jobDescription: req.body.jobDescription,
-            companyName: req.body.companyName,
-            companyDescription: req.body.companyDescription,
-            createdBy: userID
-        }, function (err, jobProfile) {
-            if (err) {
-                console.log(err);
-                next(err);
-            }
+//     isUserAuthorizedForJobProfile(jobProfileID, userID)
+//         .then(function (jobProfile) {
+//             if (jobProfile.status) {
+//                 updateJobProfile();
+//             } else {
+//                 res.status(401).json({
+//                     message: 'Unauthorized access'
+//                 })
+//             }
+//         })
+//         .catch(function (err) {
+//             console.log(err);
+//             next(err);
+//         })
 
-            console.log(jobProfile);
-            res.status(200).json(jobProfile);
-        })
+//     function updateJobProfile() {
 
-    }
-})
+//         jobProfile.findByIdAndUpdate(jobProfileID, {
+//             jobTitle: req.body.jobTitle,
+//             jobDescription: req.body.jobDescription,
+//             companyName: req.body.companyName,
+//             companyDescription: req.body.companyDescription,
+//             createdBy: userID
+//         }, function (err, jobProfile) {
+//             if (err) {
+//                 console.log(err);
+//                 next(err);
+//             }
 
-Router.delete('/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
-    var jobProfileID = req.params.id;
-    var userID = req.user._id;
+//             console.log(jobProfile);
+//             res.status(200).json(jobProfile);
+//         })
 
-    userAuthorizedForJobProfile(jobProfileID, userID)
-        .then(function (jobProfile) {
-            if (jobProfile.status) {
-                deleteJobProfile();
-            } else {
-                res.status(401).json({
-                    message: 'Unauthorized access'
-                })
-            }
-        })
-        .catch(function (err) {
-            console.log(err);
-            next(err);
-        })
+//     }
+// })
 
-    function deleteJobProfile() {
+var deleteJobProfileByID = require('./deleteJobProfileFunctionalRefactoring');
+Router.delete('/:id', passport.authenticate('jwt', { session: false }), deleteJobProfileByID);
 
-        jobProfile.findByIdAndRemove(jobProfileID, function (err, jobProfile) {
-            if (err) {
-                console.log(err);
-                next(err);
-            }
+// Router.delete('/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+//     var jobProfileID = req.params.id;
+//     var userID = req.user._id;
 
-            removeJobProfileIDFromUser(jobProfileID, userID);
+//     isUserAuthorizedForJobProfile(jobProfileID, userID)
+//         .then(function (jobProfile) {
+//             if (jobProfile.status) {
+//                 deleteJobProfile();
+//             } else {
+//                 res.status(401).json({
+//                     message: 'Unauthorized access'
+//                 })
+//             }
+//         })
+//         .catch(function (err) {
+//             console.log(err);
+//             next(err);
+//         })
 
-            function removeJobProfileIDFromUser(jobProfileID, userID) {
+//     function deleteJobProfile() {
 
-                user.findByIdAndUpdate(userID, { $pull: { jobProfiles: jobProfile._id } }, function (err, user) {
-                    if (err) {
-                        console.log(err);
-                        next(err);
-                    }
+//         jobProfile.findByIdAndRemove(jobProfileID, function (err, jobProfile) {
+//             if (err) {
+//                 console.log(err);
+//                 next(err);
+//             }
 
-                    console.log(user);
-                    res.status(200).json({
-                        message: "Job Profile successfully deleted",
-                        user: user
-                    });
+//             removeJobProfileIDFromUser(jobProfileID, userID);
 
-                })
+//             function removeJobProfileIDFromUser(jobProfileID, userID) {
 
-            }
+//                 user.findByIdAndUpdate(userID, { $pull: { jobProfiles: jobProfile._id } }, function (err, user) {
+//                     if (err) {
+//                         console.log(err);
+//                         next(err);
+//                     }
 
-            // res.status(200).send("Job Profile successfully deleted");
-        })
+//                     console.log(user);
+//                     res.status(200).json({
+//                         message: "Job Profile successfully deleted",
+//                         user: user
+//                     });
 
-    }
+//                 })
 
-})
+//             }
+
+//             // res.status(200).send("Job Profile successfully deleted");
+//         })
+
+//     }
+
+// })
